@@ -144,20 +144,19 @@ def main():
 
         print("Checking Y...")
         print("-----------------------")
-        y_train_ss, y_test_ss = norm_standardize_my(y_train, y_test,
-                                                    study_train, study_test)
+        y_train_ss, y_test_ss = norm_standardize_my(y_train, study_train,
+                                                    y_test, study_test)
 
         print("-----------------------")
 
         print("Checking M...")
-        m_train_ss, m_test_ss = norm_standardize_my(m_train, m_test,
-                                                    study_train, study_test)
+        m_train_ss, m_test_ss = norm_standardize_my(m_train, study_train,
+                                                    m_test, study_test)
 
         print("-----------------------")
 
-        X_train_combat, X_test_combat = harmonize_cohorts(X_train, X_test,
-                                                          study_train,
-                                                          study_test)
+        X_train_combat, X_test_combat = harmonize_cohorts(X_train, study_train,
+                                                          X_test, study_test)
 
         # This is to ensure that I didn't screw up and used no standardised/
         # harmonised data.
