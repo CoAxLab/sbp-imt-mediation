@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This script generates the predictions for a given experiment,
-given the mediator, outcome, the task as input, and the
-PC regression model.
+
+This script just runs predicitons filtering by average 
+framewise displacement when loading the data.
+
 
 """
 
@@ -20,6 +21,8 @@ from scipy.stats import ks_2samp
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold
+# from my_sklearn_tools.model_selection import (StratifiedKFoldReg,
+#                                               RepeatedStratifiedKFoldReg)
 
 project_dir = Path(__file__).resolve().parent.parent.as_posix()
 sys.path.append(project_dir)
@@ -30,7 +33,7 @@ from src.models import L1MediationModel, L2MediationModel
 
 def main():
 
-    parser = argparse.ArgumentParser(description='Run a particular experiment')
+    parser = argparse.ArgumentParser(description='Run a particular experiment filtering by average framewise displacement')
     parser.add_argument('--target',
                         dest="target",
                         type=str,
@@ -53,6 +56,10 @@ def main():
                         default="ridge",
                         choices=['ridge', 'lasso'],
                         help='Which penalized PC Regression model to run (default: ridge)')
+    parser.add_argument('--fwd',
+                        type=float,
+                        default=0.5,
+                        help='Amount of framewise displacement above which filtering subjectss')
     parser.add_argument('--output_dir',
                         type=str,
                         help="Name for the output directory")
@@ -67,24 +74,25 @@ def main():
         Model = L1MediationModel
         model_kws = {'lasso_kws': {'max_iter': int(1e6)}, 'n_alphas': 1000}
 
-    y_var = opts.target  # e.g "mavg_bulbf_ccaf"
+    y_var = opts.target  # e.g "mavgimt"
     m_var = opts.mediator  # e.g "sbp_auc_g_both"
     run_task = opts.task  # e.g "both"
+    fwd = opts.fwd
 
     if opts.output_dir:
         output_dir = opj(project_dir, opts.output_dir)
     else:
         res_name = f"Y-{y_var}_M-{m_var}_task-{run_task}"
         output_dir = opj(project_dir, "results", res_name,
-                         "predictions", opts.model)
+                         "sensitivity_analysis", opts.model)
     Path(output_dir).mkdir(exist_ok=True, parents=True)
 
-    print(f"Running experiment with Y: {y_var}, M: {m_var}, "
+    print(f"Running sensitivity analysis with Y: {y_var}, M: {m_var}, "
           f"using {run_task} contrast maps, "
-          f"with model: {opts.model}")
+          f"with model: {opts.model} and fwd: {fwd}")
 
     # We are returning IDS, for later controlling predictions for covariates
-    X, y, M, study, ids = load_data(y_var, m_var, run_task, return_ids=True)
+    X, y, M, study, ids = load_data(y_var, m_var, run_task, return_ids=True, fwd=fwd)
 
     # Create digits for according to quartile
     y_digits = np.digitize(y, np.quantile(y, np.arange(0, 1, 1/3)))

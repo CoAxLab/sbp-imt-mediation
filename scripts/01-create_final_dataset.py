@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Dec  8 17:01:22 2022
+This script creates the project data by using only those subjects with 
+available fMRI data.
 
-@author: javi
 """
 
 import pandas as pd
@@ -14,9 +14,7 @@ from datetime import datetime
 
 project_dir = Path(__file__).resolve().parent.parent.as_posix()
 
-project_data = pd.read_csv(opj(project_dir,
-                               "data/NOAH_PIP_w_reactivities_AUC_Dec22.csv")
-                           )
+project_data = pd.read_csv(opj(project_dir, "data/NOAH_PIP_w_reactivities_AUC_Dec22.csv")
 
 pip_stroop_ids = [
     folder.split("/")[-3] for folder in
