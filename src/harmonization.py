@@ -10,7 +10,7 @@ import numpy as np
 def norm_standardize_my(var_train, study_train,
                         var_test=None, study_test=None,
                         verbose=False):
-"""Harmonize by standardization by STUDY. For M and Y"""
+    """Harmonize by standardization by STUDY. For M and Y"""
 
     from sklearn.preprocessing import PowerTransformer
     from scipy.stats import ks_2samp, ttest_ind, bartlett
@@ -69,7 +69,7 @@ def norm_standardize_my(var_train, study_train,
 
 
 def harmonize_cohorts(X_train, study_train, X_test=None, study_test=None):
-"""Harmonize by Combat by STUDY. For X"""
+    """Harmonize by Combat by STUDY. For X"""
     from pycombat import Combat
     from sklearn.preprocessing import LabelBinarizer
 

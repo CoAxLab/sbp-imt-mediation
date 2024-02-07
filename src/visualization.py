@@ -57,6 +57,8 @@ def plot_surf_subcortical(img, vmax=None, vmin=None,
     from nilearn.surface import load_surf_mesh, vol_to_surf
     from matplotlib.colors import LightSource
     import matplotlib.pylab as plt
+    from matplotlib import gridspec
+
     if black_bg:
         bg = 'k'
     else:
