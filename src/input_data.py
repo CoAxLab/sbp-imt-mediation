@@ -1,22 +1,43 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+This file contains the functions to load the data.
+"""
+
 import numpy as np
 import pandas as pd
 from os.path import join as opj
 from pathlib import Path
 
 
-def load_data(y_var, m_var, run_task, return_ids=False):
+def load_data(y_var, m_var, run_task, mask_img=None, return_ids=False, fwd=None):
 
     from nilearn.input_data import NiftiMasker
 
     project_dir = Path(__file__).resolve().parent.parent.as_posix()
 
-    nifti_masker = NiftiMasker(mask_img=opj(project_dir,
-                                            "data/resliced_grey25grey25.nii")
-                               )
+    if mask_img is None:
+        mask_img = opj(project_dir, "data/resliced_grey25grey25.nii")
+
+    nifti_masker = NiftiMasker(mask_img=mask_img)
 
     project_data = pd.read_csv(
-        opj(project_dir, "data/final_data_2022-12-08.csv")
+        opj(project_dir, "data/final_data_2023-01-25_w10cvd.csv")
         )
+    if fwd:
+        try:
+            fwd = float(fwd)
+        except ValueError as e:
+            raise("Error reading the amount of framewise displacement")
+
+        print("filtering subjects with fwd greater"
+              f" than {fwd} in either Stroop or MSIT")
+
+        cond_fwd_stroop = project_data.fwd_stroop > fwd
+        cond_fwd_msit = project_data.fwd_msit > fwd
+        cond_fwd = cond_fwd_stroop | cond_fwd_msit
+        print(f"{sum(cond_fwd)} subjects have fwd > {fwd}")
+        project_data = project_data.loc[~cond_fwd, :]
 
     run_data = project_data.loc[:, ['ID', 'STUDY', y_var,  m_var]].dropna()
 

@@ -1,11 +1,18 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Here some functions to gather the results.
+They are used later when generating the plots.
+
+"""
+
 import numpy as np
 import pandas as pd
 
 def get_results(file_npz):
     y_trues = np.load(file_npz, allow_pickle=True)['y_trues']
     y_preds = np.load(file_npz, allow_pickle=True)['y_preds']
-    #coefs = np.load(file_npz, allow_pickle=True)['coefs']
-    
+
     seed_ids = np.repeat([1,2,3,4,5], 10)
     res_df = pd.DataFrame({'pred': np.concatenate(y_preds),
                            'true': np.concatenate(y_trues),
