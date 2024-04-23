@@ -14,11 +14,10 @@ import argparse
 import sys
 from pathlib import Path
 from os.path import join as opj
-from joblib import dump
+import skops.io as sio
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import StratifiedKFold
-#from my_sklearn_tools.model_selection import StratifiedKFoldReg
 
 project_dir = Path(__file__).resolve().parent.parent.as_posix()
 sys.path.append(project_dir)
@@ -102,7 +101,7 @@ def main():
 
     print("Fitting mediation model")
     print("-----------------------")
-    mediation_model = Model(cv=cv_inner, n_jobs=-1, **model_kws)
+    mediation_model = Model(cv=cv_inner, n_jobs=1, **model_kws)
     mediation_model.fit(X=X_combat, y=y_ss, m=m_ss)
 
 
@@ -111,7 +110,7 @@ def main():
                         X=X_combat, y=y_ss, m=m_ss)
 
     # Save fitted models
-    dump(mediation_model, opj(output_dir, 'mediation_model.joblib'))
+    sio.dump(mediation_model, opj(output_dir, 'mediation_model.skops'))
 
 if __name__ == "__main__":
     sys.exit(main())

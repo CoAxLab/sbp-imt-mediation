@@ -1,6 +1,4 @@
 #!/bin/bash
-
-m="map_auc_g_both"
 y="mavg_bulbf_ccaf"
 task="both"
 
